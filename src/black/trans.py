@@ -56,6 +56,8 @@ TMatchResult = TResult[list[Index]]
 
 SPLIT_SAFE_CHARS = frozenset(["\u3001", "\u3002", "\uff0c"])  # East Asian stops
 
+INDENT_SPACE = 3
+
 
 def TErr(err_msg: str) -> Err[CannotTransform]:
     """(T)ransform Err
@@ -1179,7 +1181,7 @@ class BaseStringSplitter(StringTransformer):
         #   NN: The leaf that is after N.
 
         # WMA4 the whitespace at the beginning of the line.
-        offset = line.depth * 4
+        offset = line.depth * INDENT_SPACE
 
         if is_valid_index(string_idx - 1):
             p_idx = string_idx - 1
@@ -1533,7 +1535,7 @@ class StringSplitter(BaseStringSplitter, CustomSplitMapMixin):
                 characters expand to two columns).
             """
             result = self.line_length
-            result -= line.depth * 4
+            result -= line.depth * INDENT_SPACE
             result -= 1 if ends_with_comma else 0
             result -= string_op_leaves_length
             return result
@@ -1544,7 +1546,7 @@ class StringSplitter(BaseStringSplitter, CustomSplitMapMixin):
         # The last index of a string of length N is N-1.
         max_break_width -= 1
         # Leading whitespace is not present in the string value (e.g. Leaf.value).
-        max_break_width -= line.depth * 4
+        max_break_width -= line.depth * INDENT_SPACE
         if max_break_width < 0:
             yield TErr(
                 f"Unable to split {LL[string_idx].value} at such high of a line depth:"
@@ -1968,7 +1970,7 @@ class StringParenWrapper(BaseStringSplitter, CustomSplitMapMixin):
                 char == " " or char in SPLIT_SAFE_CHARS for char in string_value
             ):
                 # And will still violate the line length limit when split...
-                max_string_width = self.line_length - ((line.depth + 1) * 4)
+                max_string_width = self.line_length - ((line.depth + 1) * INDENT_SPACE)
                 if str_width(string_value) > max_string_width:
                     # And has no associated custom splits...
                     if not self.has_custom_splits(string_value):

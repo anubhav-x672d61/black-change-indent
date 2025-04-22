@@ -35,6 +35,8 @@ Index = int
 LeafID = int
 LN = Union[Leaf, Node]
 
+INDENT_SPACE = 3
+
 
 @dataclass
 class Line:
@@ -480,7 +482,7 @@ class Line:
         if not self:
             return "\n"
 
-        indent = "    " * self.depth
+        indent = " " * INDENT_SPACE * self.depth
         leaves = iter(self.leaves)
         first = next(leaves)
         res = f"{first.prefix}{indent}{first.value}"
@@ -1028,7 +1030,7 @@ def can_omit_invisible_parens(
 def _can_omit_opening_paren(line: Line, *, first: Leaf, line_length: int) -> bool:
     """See `can_omit_invisible_parens`."""
     remainder = False
-    length = 4 * line.depth
+    length = INDENT_SPACE * line.depth
     _index = -1
     for _index, leaf, leaf_length in line.enumerate_with_length():
         if leaf.type in CLOSING_BRACKETS and leaf.opening_bracket is first:
@@ -1052,7 +1054,7 @@ def _can_omit_opening_paren(line: Line, *, first: Leaf, line_length: int) -> boo
 
 def _can_omit_closing_paren(line: Line, *, last: Leaf, line_length: int) -> bool:
     """See `can_omit_invisible_parens`."""
-    length = 4 * line.depth
+    length = INDENT_SPACE * line.depth
     seen_other_brackets = False
     for _index, leaf, leaf_length in line.enumerate_with_length():
         length += leaf_length

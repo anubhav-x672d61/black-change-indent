@@ -91,6 +91,8 @@ from blib2to3.pytree import Leaf, Node
 LeafID = int
 LN = Union[Leaf, Node]
 
+INDENT_SPACE = 3
+
 
 class CannotSplit(CannotTransform):
     """A readable split that fits the allotted line length is impossible."""
@@ -442,7 +444,7 @@ class LineGenerator(Visitor[Line]):
             quote_len = 1 if docstring[1] != quote_char else 3
             docstring = docstring[quote_len:-quote_len]
             docstring_started_empty = not docstring
-            indent = " " * 4 * self.current_line.depth
+            indent = " " * INDENT_SPACE * self.current_line.depth
 
             if is_multiline_string(leaf):
                 docstring = fix_multiline_docstring(docstring, indent)
@@ -1746,7 +1748,7 @@ def generate_trailers_to_omit(line: Line, line_length: int) -> Iterator[set[Leaf
     if not line.magic_trailing_comma:
         yield omit
 
-    length = 4 * line.depth
+    length = INDENT_SPACE * line.depth
     opening_bracket: Optional[Leaf] = None
     closing_bracket: Optional[Leaf] = None
     inner_brackets: set[LeafID] = set()
